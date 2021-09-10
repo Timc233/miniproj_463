@@ -1,11 +1,10 @@
 package com.miniproj.miniproj.APIOperation;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.miniproj.miniproj.APIOperation.entity.FdcReturn;
 import okhttp3.*;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,6 +13,8 @@ import java.io.IOException;
 @Service
 public class APIRequest {
 
+    @Value("${fdcapi.token}")
+    String token;
 
     public FdcReturn SearchBranded(String barcode, String apiKey) throws IOException{
         Gson gson = new Gson();
@@ -36,6 +37,31 @@ public class APIRequest {
         FdcReturn fdcReturn = gson.fromJson(response.body().string(), FdcReturn.class);
 
         return fdcReturn;
+    }
+
+    public String getFood(String FdcId){
+        HttpUrl url = new HttpUrl.Builder()
+                .scheme("https")
+                .host("api.nal.usda.gov")
+                .addPathSegment("fdc/v1/food")
+                .addPathSegment(FdcId)
+                .addQueryParameter("api_key", token)
+                .build();
+//        TODO Finish this
+        return null;
+    }
+
+    public String getRequest(String url) throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+        Call call = client.newCall(request);
+        Response response = call.execute();
+//        TODO Clean this
+//        JsonParser jsonParser = new JsonParser();
+//        JsonElement jsonElement = parser.parse(response.body().string());
+        return response.body().string();
     }
 
 

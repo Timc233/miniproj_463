@@ -17,7 +17,7 @@ public class SearchServiceImpl implements SearchService {
         FdcReturn fdcReturn = new FdcReturn();
         APIRequest apiRequest = new APIRequest();
 
-//        FIXME apikey used here
+//        FIXME apikey used here, clean this
 //        apikey is hidden on GitHub
         fdcReturn = apiRequest.SearchBranded(barcode, "");
         BrandedFoodVO brandedFoodVO = new BrandedFoodVO();
