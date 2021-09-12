@@ -35,7 +35,7 @@ class _CalculatePageState extends State<CalculatePage> {
   void uploadBarcodeAction(int barcode)async{
 
     print("uploadBarcodeAction");
-    String url = Apis.api + "/food/search?barcode="; // Api here ignored
+    String url = Apis.baseApi + Apis.searchBarcode; // Api here ignored
     url = url + barcode.toString();
 
     try {
