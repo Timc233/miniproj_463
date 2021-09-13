@@ -82,7 +82,39 @@ public class RecipeServiceImpl implements RecipeService {
     }
 
     @Override
+    public String deleteFood(String userId, String recipeId) {
+        LambdaQueryWrapper<Recipe> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Recipe::getUserId, userId)
+                    .eq(Recipe::getId, recipeId);
+        List<Recipe> recipeList = recipeMapper.selectList(queryWrapper);
+
+        if(recipeList.size()==0){
+            return JsonResponse.fail("No such food associated with the user").toJson();
+        }
+
+        recipeMapper.delete(queryWrapper);
+        String returnData = "Food(" + recipeId + ") has been deleted from user("+userId+")";
+        return JsonResponse.success(returnData).toJson();
+    }
+
+    @Override
+    public String deleteRecipe(String userId, String userDefinedId) {
+        LambdaQueryWrapper<Recipe> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Recipe::getUserId, userId)
+                    .eq(Recipe::getUserAssignedRecipeId, userDefinedId);
+        List<Recipe> recipeList = recipeMapper.selectList(queryWrapper);
+        if(recipeList.size()==0){
+            return JsonResponse.fail("No recipe associated with the user").toJson();
+        }
+
+        recipeMapper.delete(queryWrapper);
+        String returnData = "Recipe("+userDefinedId+") has been deleted from user("+userId+")";
+        return JsonResponse.success(returnData).toJson();
+    }
+
+    @Override
     public String searchRecipe(String userId) {
+//      SQL operation, search all recipes under the userId
         LambdaQueryWrapper<Recipe> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Recipe::getUserId, userId).orderByAsc(Recipe::getUserAssignedRecipeId);
         List<Recipe> recipeList = recipeMapper.selectList(queryWrapper);
@@ -90,14 +122,18 @@ public class RecipeServiceImpl implements RecipeService {
         List<RecipeVO> recipeVOList = new ArrayList<>();
         RecipeVO recipeVO = new RecipeVO();
         List<RecipeFoodVO> recipeFoodVOList = new ArrayList<>();
+//      Put data into VOs
         Double totalCalories = 0.00;
         for(Recipe x : recipeList){
+//            Put food data into food VO
             RecipeFoodVO recipeFoodVO = new RecipeFoodVO();
+            recipeFoodVO.setRecipeId(x.getId());
             recipeFoodVO.setFoodName(x.getFoodName());
             recipeFoodVO.setCaloriePerServing(x.getCaloriePerServing());
             recipeFoodVO.setAmount(x.getAmount());
             recipeFoodVO.setServingSize(x.getServingSize());
             recipeFoodVO.setServingSizeUnit(x.getServingSizeUnit());
+//            Deal with different user defined recipe IDs
             if(x.getUserAssignedRecipeId()!=recipeId){
                 if(recipeId == null){
                     recipeId = x.getUserAssignedRecipeId();
@@ -119,11 +155,10 @@ public class RecipeServiceImpl implements RecipeService {
 
 //          Calculate total calories
             totalCalories += x.getCaloriePerServing() * (x.getAmount() / x.getServingSize());
-            recipeVO.setRecipeId(x.getUserAssignedRecipeId());
+            recipeVO.setUserDefinedRecipeId(x.getUserAssignedRecipeId());
+//            recipeVO.setRecipeId(x.getId());
             recipeVO.setRecipeDescription(x.getRecipeDescription());
-
         }
-
 //        Wrap up with the last food list
         recipeVO.setTotalCalories(totalCalories);
         recipeVO.setFoods(recipeFoodVOList);

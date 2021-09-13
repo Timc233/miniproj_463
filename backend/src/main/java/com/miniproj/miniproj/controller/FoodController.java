@@ -39,6 +39,16 @@ public class FoodController {
         return recipeService.add(userId, foodIndex, recipeId, recipeDescription, amount);
     }
 
+    @RequestMapping(value = "/deleteFood", method = POST)
+    public String deleteFood(String userId, String recipeId){
+        return recipeService.deleteFood(userId, recipeId);
+    }
+
+    @RequestMapping(value = "/deleteRecipe", method = POST)
+    public String deleteRecipe(String userId, String userDefinedRecipeId){
+        return recipeService.deleteRecipe(userId, userDefinedRecipeId);
+    }
+
     @RequestMapping(value = "/searchRecipe", method = POST)
     public String searchRecipe(String userId){
         return recipeService.searchRecipe(userId);

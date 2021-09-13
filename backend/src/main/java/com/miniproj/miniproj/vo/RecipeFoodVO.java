@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class RecipeFoodVO {
+    Integer recipeId;
     String foodName;
     Double caloriePerServing;
     Double servingSize;
