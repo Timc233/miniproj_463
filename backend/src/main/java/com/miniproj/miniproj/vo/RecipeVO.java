@@ -8,6 +8,6 @@ import java.util.List;
 public class RecipeVO {
     Integer recipeId;
     String recipeDescription;
-    Integer totalCalories;
+    Double totalCalories;
     List<RecipeFoodVO> foods;
 }

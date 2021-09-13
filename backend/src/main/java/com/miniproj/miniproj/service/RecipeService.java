@@ -4,7 +4,7 @@ import java.io.IOException;
 
 public interface RecipeService {
 
-    String add(String userId, String foodIndex, String recipeId, String recipeDescription) throws IOException;
+    String add(String userId, String foodIndex, String recipeId, String recipeDescription, Double amount) throws IOException;
 
     String searchRecipe(String userId);
 

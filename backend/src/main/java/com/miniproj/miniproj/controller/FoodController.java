@@ -23,10 +23,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/food")
 public class FoodController {
 
-//    TODO Clean this
-    @Value("${fdcapi.token}")
-    String token;
-
     @Autowired
     SearchService searchService;
 
@@ -39,8 +35,8 @@ public class FoodController {
     }
 
     @RequestMapping(value = "/add", method = POST)
-    public String add(String userId, String foodIndex, String recipeId, String recipeDescription) throws IOException {
-        return recipeService.add(userId, foodIndex, recipeId, recipeDescription);
+    public String add(String userId, String foodIndex, String recipeId, String recipeDescription, Double amount) throws IOException {
+        return recipeService.add(userId, foodIndex, recipeId, recipeDescription, amount);
     }
 
     @RequestMapping(value = "/searchRecipe", method = POST)
@@ -48,12 +44,9 @@ public class FoodController {
         return recipeService.searchRecipe(userId);
     }
 
-//    TODO Clean this
-    @RequestMapping(value = "/test", method = GET)
-    public String test() throws IOException {
-        APIRequest apiRequest = new APIRequest();
-        String url = "https://api.nal.usda.gov/fdc/v1/food/1947848?api_key=" + token;
-        return apiRequest.getRequest(url);
+    @RequestMapping(value="/searchDetail", method = GET)
+    public String searchDetail(String foodIndex) throws IOException {
+        return searchService.foodDetail(foodIndex);
     }
 
 }

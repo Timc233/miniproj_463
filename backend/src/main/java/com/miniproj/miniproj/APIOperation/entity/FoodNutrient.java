@@ -3,7 +3,7 @@ package com.miniproj.miniproj.APIOperation.entity;
 import lombok.Data;
 
 @Data
-public class FoodNutrient {
+public class  FoodNutrient {
     public int nutrientId;
     public String nutrientName;
     public String nutrientNumber;
