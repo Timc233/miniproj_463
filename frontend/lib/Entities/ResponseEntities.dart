@@ -5,16 +5,63 @@ import 'Entities.dart';
 part 'ResponseEntities.g.dart';
 
 @JsonSerializable()
-class FoodResponse {
+class FoodSearchResponse {
   final int responseCode;
   final String message;
   final FoodEntity data;
 
-  FoodResponse({
+  FoodSearchResponse({
     required this.responseCode,
     required this.message,
     required this.data,
   });
-  factory FoodResponse.fromJson(Map<String, dynamic> json) => _$FoodResponseFromJson(json);
-  Map<String, dynamic> toJson() => _$FoodResponseToJson(this);
+  factory FoodSearchResponse.fromJson(Map<String, dynamic> json) => _$FoodSearchResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodSearchResponseToJson(this);
 }
+
+@JsonSerializable()
+class FoodDetailSearchResponse {
+  final int responseCode;
+  final String message;
+  final FoodDetailEntity data;
+
+  FoodDetailSearchResponse({
+    required this.responseCode,
+    required this.message,
+    required this.data,
+  });
+  factory FoodDetailSearchResponse.fromJson(Map<String, dynamic> json) => _$FoodDetailSearchResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$FoodDetailSearchResponseToJson(this);
+}
+
+@JsonSerializable()
+class StringDataResponse {
+  final int responseCode;
+  final String message;
+  final String data;
+
+  StringDataResponse({
+    required this.responseCode,
+    required this.message,
+    required this.data,
+  });
+  factory StringDataResponse.fromJson(Map<String, dynamic> json) => _$StringDataResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$StringDataResponseToJson(this);
+}
+
+@JsonSerializable()
+class UserResponse {
+  final int responseCode;
+  final String message;
+  final UserEntity data;
+
+  UserResponse({
+    required this.responseCode,
+    required this.message,
+    required this.data,
+  });
+  factory UserResponse.fromJson(Map<String, dynamic> json) => _$UserResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$UserResponseToJson(this);
+}
+
+

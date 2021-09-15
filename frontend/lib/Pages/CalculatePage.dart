@@ -10,6 +10,8 @@ import 'package:http/http.dart' as http;
 import 'package:untitled/Api/Apis.dart';
 
 import '../Entities/Entities.dart';
+import '../main.dart';
+import 'Pages.dart';
 
 class CalculatePage extends StatefulWidget {
   CalculatePage({
@@ -30,13 +32,14 @@ class _CalculatePageState extends State<CalculatePage> {
 
     print("barcodeScanRes");
     print(barcodeScanRes);
+    uploadBarcodeAction(barcodeScanRes);
   }
 
-  void uploadBarcodeAction(int barcode)async{
+  void uploadBarcodeAction(String barcode)async{
 
     print("uploadBarcodeAction");
     String url = Apis.baseApi + Apis.searchBarcode; // Api here ignored
-    url = url + barcode.toString();
+    url = url + barcode;
 
     try {
       var dio = Dio();
@@ -45,7 +48,7 @@ class _CalculatePageState extends State<CalculatePage> {
       print(response);
 
       final Map<String, dynamic> parsed = json.decode(response.toString());
-      FoodResponse result = FoodResponse.fromJson(parsed);
+      FoodSearchResponse result = FoodSearchResponse.fromJson(parsed);
 
       print("result");
       print(result);
@@ -69,17 +72,28 @@ class _CalculatePageState extends State<CalculatePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.green,
+        color: Color.fromRGBO(244, 220, 130, 1),
         child: Center(
           child: GestureDetector(
             onTap: (){
-              scanBarcodeAction();
+              if(MyApp.isLogin){
+                scanBarcodeAction();
+              }
+              else{
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginSigninPage()));
+              }
+
               // uploadBarcodeAction(barcode);
             },
             child: Container(
               height: 60,
-              width: 120,
-              color: Colors.white,
+              width: 200,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(
+                  Radius.elliptical(20, 20),
+                ),
+                color: Colors.white,
+              ),
               child: Center(
                 child: Text(
                   "Pick a Barcode",
