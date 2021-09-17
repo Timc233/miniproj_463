@@ -78,6 +78,18 @@ class _ScanPageState extends State<ScanPage> {
                     child: Text(result.data.foodName),
                   ),
                 ),
+                Container(
+                  padding: EdgeInsets.only(top: 48),
+                  height: 80,
+                  width: 200,
+                  child: Center(
+                    child: Text(
+                      "calories/serving: " + result.data.caloriesPerServing.toString(),
+                      textAlign: TextAlign.right,
+                    ),
+
+                  ),
+                ),
                 Visibility(
                   visible: isLoading,
                   child: CircularProgressIndicator(),
