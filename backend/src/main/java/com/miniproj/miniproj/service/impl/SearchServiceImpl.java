@@ -30,6 +30,9 @@ public class SearchServiceImpl implements SearchService {
     public String foodSearch(String barcode) throws IOException {
         FdcReturn fdcReturn = new FdcReturn();
         fdcReturn = apiRequest.SearchBranded(barcode);
+        if(fdcReturn.getTotalHits()==0){
+            return JsonResponse.fail("Food not existed in FDC database").toJson();
+        }
         BrandedFoodVO brandedFoodVO = new BrandedFoodVO();
         brandedFoodVO.setFoodName(fdcReturn.getFoodName());
         brandedFoodVO.setCaloriesPerServing(fdcReturn.getCalorie());

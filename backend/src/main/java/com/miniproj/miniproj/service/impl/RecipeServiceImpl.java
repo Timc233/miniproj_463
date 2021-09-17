@@ -175,6 +175,9 @@ public class RecipeServiceImpl implements RecipeService {
 
         List<Recipe> recipeList = new ArrayList<>();
         recipeList = recipeMapper.selectList(queryWrapper);
+        if(recipeList.size()==0){
+            return 1;
+        }
         Integer newRecipeId = recipeList.get(0).getUserAssignedRecipeId()+1;
         return newRecipeId;
     }

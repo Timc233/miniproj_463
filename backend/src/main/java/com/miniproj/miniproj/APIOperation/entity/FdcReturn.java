@@ -15,10 +15,18 @@ public class FdcReturn {
     public Aggregations aggregations;
 
     public String getFoodName(){
+        if(this.getTotalHits()==0){
+            return null;
+        }
+
         return this.getFoods().get(0).getDescription();
     }
 
     public Double getCalorie(){
+        if(this.getTotalHits()==0){
+            return null;
+        }
+
         List<FoodNutrient> foodNutrientList = this.getFoods().get(0).foodNutrients;
         Double Calorie = null;
         for(FoodNutrient x:foodNutrientList){
