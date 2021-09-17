@@ -173,14 +173,62 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                         },
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 16),
-                      child: Center(
-                        child: Text(
-                          amountNum.toString(),
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                    GestureDetector(
+                      onTap: (){
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text('Amount'),
+                              content: SingleChildScrollView(
+                                child: Container(
+                                  height: 90,
+                                  width: 150,
+                                  child: ListView.builder(
+                                    itemCount: 99,
+                                    scrollDirection: Axis.vertical,
+                                    physics: AlwaysScrollableScrollPhysics(),
+                                    itemBuilder: (ctx ,index ){
+                                      return Card(
+                                          child: GestureDetector(
+                                            onTap: (){
+                                              setState(() {
+                                                amountNum = index+1;
+                                              });
+
+                                              Navigator.pop(context);
+                                            },
+                                            child: Padding(
+                                              padding: EdgeInsets.all(8),
+                                              child: Text(
+                                                (index+1).toString(),
+                                                style: TextStyle(
+                                                  fontSize: 20,
+                                                  color: (amountNum == index+1)?Colors.blue:Colors.black
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ),
+                                            ),
+                                          )
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+
+                            );
+                          },
+                        );
+                      },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: Center(
+                          child: Text(
+                            amountNum.toString(),
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -273,6 +321,7 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                 amount: amountNum,
                 barcode: barcode,
                 recipes: result.data,
+                serving: widget.foodDetail!.servingSize,
               )
           )
       );
@@ -285,6 +334,7 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
                 amount: amountNum,
                 barcode: barcode,
                 recipes: [],
+                serving: widget.foodDetail!.servingSize,
               )
           )
       );

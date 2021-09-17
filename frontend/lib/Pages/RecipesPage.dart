@@ -16,11 +16,13 @@ class RecipesPage extends StatefulWidget {
   int amount;
   String barcode;
   List<RecipeEntity> recipes;
+  double serving;
 
   RecipesPage({
     Key? key,
     this.amount = 0,
     this.barcode = "",
+    this.serving = 0,
     required this.recipes,
   }) : super(key: key);
 
@@ -141,14 +143,14 @@ class _RecipesPageState extends State<RecipesPage> {
         'foodIndex': widget.barcode,
         'recipeId': "",
         'recipeDescription': _recipeInfoController.text,
-        'amount': widget.amount,
+        'amount': widget.amount * widget.serving,
       })
           :FormData.fromMap({
         'userId': MyApp.userId,
         'foodIndex': widget.barcode,
         'recipeId': widget.recipes[index-1].userDefinedRecipeId,
         'recipeDescription': _recipeInfoController.text,
-        'amount': widget.amount,
+        'amount': widget.amount * widget.serving,
       }),
     );
     print("addToRecipe response");
@@ -302,11 +304,13 @@ class SingleRecipePage extends StatefulWidget {
 
   String barcode;
   RecipeEntity recipe;
+  bool isOwn;
 
   SingleRecipePage({
     Key? key,
     this.barcode = "",
     required this.recipe,
+    this.isOwn = false,
   }) : super(key: key);
 
   @override
@@ -382,10 +386,13 @@ class _SingleRecipesPageState extends State<SingleRecipePage> {
             padding: EdgeInsets.only(right: 8),
             child: GestureDetector(
               onTap: (){
-                deleteRecipe();
+                if(widget.isOwn){
+
+                  deleteRecipe();
+                }
               },
               child: Icon(
-                Icons.delete,
+                (widget.isOwn)?Icons.delete:Icons.food_bank_outlined,
                 color: Colors.white,
               ),
             ),
@@ -425,9 +432,12 @@ class _SingleRecipesPageState extends State<SingleRecipePage> {
                         return ListTile(
                             leading: GestureDetector(
                               onTap: (){
-                                deleteFood(index);
+                                if(widget.isOwn){
+
+                                  deleteFood(index);
+                                }
                               },
-                              child: Icon(Icons.delete_outline),
+                              child: Icon((widget.isOwn)?Icons.delete_outline:Icons.food_bank_outlined,),
                             ),
                             trailing: Text(
                               widget.recipe.foods[index].caloriePerServing.roundToDouble().toString() + "\ncalorie/serving",
