@@ -6,8 +6,8 @@ import java.util.List;
 
 @Data
 public class RecipeVO {
-    Integer recipeId;
+    Integer userDefinedRecipeId;
     String recipeDescription;
-    Integer totalCalories;
+    Double totalCalories;
     List<RecipeFoodVO> foods;
 }

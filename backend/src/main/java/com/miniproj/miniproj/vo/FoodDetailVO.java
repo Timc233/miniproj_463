@@ -2,12 +2,13 @@ package com.miniproj.miniproj.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-public class RecipeFoodVO {
-    Integer recipeId;
+public class FoodDetailVO {
+    Integer fdcId;
     String foodName;
-    Double caloriePerServing;
     Double servingSize;
     String servingSizeUnit;
-    Double amount;
+    List<FoodNutrientVO> nutrients;
 }

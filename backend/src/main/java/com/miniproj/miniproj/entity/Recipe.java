@@ -21,4 +21,5 @@ public class Recipe {
     private Double caloriePerServing;
     private Double servingSize;
     private Double amount;
+    private String servingSizeUnit;
 }
