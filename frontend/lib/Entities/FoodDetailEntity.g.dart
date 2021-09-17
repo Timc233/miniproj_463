@@ -12,8 +12,9 @@ FoodDetailEntity _$FoodDetailEntityFromJson(Map<String, dynamic> json) {
     servingSize: (json['servingSize'] as num).toDouble(),
     foodName: json['foodName'] as String,
     servingSizeUnit: json['servingSizeUnit'] as String,
-    nutrients:
-        NutrientsEntity.fromJson(json['nutrients'] as Map<String, dynamic>),
+    nutrients: (json['nutrients'] as List<dynamic>)
+        .map((e) => NutrientsEntity.fromJson(e as Map<String, dynamic>))
+        .toList(),
   );
 }
 

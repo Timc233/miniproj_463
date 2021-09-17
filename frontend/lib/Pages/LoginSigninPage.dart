@@ -1,8 +1,13 @@
 
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import '../Api/Apis.dart';
 import '../Entities/Entities.dart';
+import '../main.dart';
 
 class LoginSigninPage extends StatefulWidget {
   LoginSigninPage({
@@ -15,6 +20,8 @@ class LoginSigninPage extends StatefulWidget {
 
 class _LoginSigninPageState extends State<LoginSigninPage> {
   final FocusNode focusNode = FocusNode();
+  final FocusNode focusNode1 = FocusNode();
+  final FocusNode focusNode2 = FocusNode();
 
   String title = "Log In";
 
@@ -22,6 +29,7 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
 
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _reEnterPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +66,8 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
           GestureDetector(
             onTap: (){
               focusNode.unfocus();
+              focusNode1.unfocus();
+              focusNode2.unfocus();
             },
             child: Container(
               height: MediaQuery.of(context).size.height,
@@ -70,6 +80,8 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
               GestureDetector(
                 onTap: (){
                   focusNode.unfocus();
+                  focusNode1.unfocus();
+                  focusNode2.unfocus();
 
                 },
                 child:
@@ -80,7 +92,7 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
               Container(
                   width: MediaQuery.of(context).size.shortestSide * 0.7893,
                   child: Form(
-                      child: TextFormField(
+                      child: TextField(
                           focusNode: focusNode,
                           controller: _emailController,
                           style: TextStyle(fontSize: 12, ),
@@ -99,14 +111,9 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
                           ),
                           keyboardType: TextInputType.emailAddress,
                           autofocus: false,
-                          onFieldSubmitted: (value) {
+                          onSubmitted: (value) {
                             FocusScope.of(context).requestFocus(FocusNode());
                           },
-                          validator: (value) {
-                            if (value!.isEmpty) {return 'Please enter your email';}
-                            if(!value.contains("@")){return 'Please enter a valid email address';}
-                            return null;
-                          }
                       )
                   )
               ),
@@ -116,9 +123,9 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
               Container(
                   width: MediaQuery.of(context).size.shortestSide * 0.7893,
                   child: Form(
-                      child: TextFormField(
-                        focusNode: focusNode,
-                        controller: _emailController,
+                      child: TextField(
+                        focusNode: focusNode1,
+                        controller: _passwordController,
                         style: TextStyle(fontSize: 12, ),
                         decoration:  InputDecoration(
                           border: OutlineInputBorder(
@@ -129,13 +136,13 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
                           contentPadding: EdgeInsets.only(left: 15, top: 5),
                           hintText: "Password",
                           suffixIcon: IconButton(
-                            onPressed: _emailController.clear,
+                            onPressed: _passwordController.clear,
                             icon: Icon(Icons.clear, color: Colors.black),
                           ),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         autofocus: false,
-                        onFieldSubmitted: (value) {
+                        onSubmitted: (value) {
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
                       )
@@ -148,9 +155,9 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
               Container(
                   width: MediaQuery.of(context).size.shortestSide * 0.7893,
                   child: Form(
-                      child: TextFormField(
-                        focusNode: focusNode,
-                        controller: _emailController,
+                      child: TextField(
+                        focusNode: focusNode2,
+                        controller: _reEnterPasswordController,
                         style: TextStyle(fontSize: 12, ),
                         decoration:  InputDecoration(
                           border: OutlineInputBorder(
@@ -161,13 +168,13 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
                           contentPadding: EdgeInsets.only(left: 15, top: 5),
                           hintText: "Enter Your Password Again",
                           suffixIcon: IconButton(
-                            onPressed: _emailController.clear,
+                            onPressed: _reEnterPasswordController.clear,
                             icon: Icon(Icons.clear, color: Colors.black),
                           ),
                         ),
                         keyboardType: TextInputType.emailAddress,
                         autofocus: false,
-                        onFieldSubmitted: (value) {
+                        onSubmitted: (value) {
                           FocusScope.of(context).requestFocus(FocusNode());
                         },
                       )
@@ -225,12 +232,55 @@ class _LoginSigninPageState extends State<LoginSigninPage> {
     );
   }
 
-  void loginAction(){
+  void loginAction()async{
     print("start login");
+    String url = Apis.baseApi + Apis.logIn; // Api here ignored
+
+    try {
+      var dio = Dio();
+      var response = await dio.post(
+        url,
+        data: FormData.fromMap({
+          'userEmail': _emailController.text,
+          'userName': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+      print("log in response");
+      print(response);
+
+      final Map<String, dynamic> parsed = json.decode(response.toString());
+      UserResponse result = UserResponse.fromJson(parsed);
+
+      MyApp.isLogin = true;
+      MyApp.userId = result.data.userId;
+      Navigator.pop(context);
+
+    } catch (e) {
+      print(e);
+    }
   }
 
-  void signinAction(){
+  void signinAction()async{
     print("start signin");
+    String url = Apis.baseApi + Apis.signIn; // Api here ignored
 
+    try {
+      var dio = Dio();
+      var response = await dio.post(
+        url,
+        data: FormData.fromMap({
+          'userEmail': _emailController.text,
+          'userName': _emailController.text,
+          'password': _passwordController.text,
+        }),
+      );
+      print("sign in response");
+      print(response);
+      loginAction();
+
+    } catch (e) {
+      print(e);
+    }
   }
 }

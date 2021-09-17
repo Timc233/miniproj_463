@@ -8,7 +8,7 @@ part of 'RecipeEntity.dart';
 
 RecipeEntity _$RecipeEntityFromJson(Map<String, dynamic> json) {
   return RecipeEntity(
-    recipeId: json['recipeId'] as int,
+    userDefinedRecipeId: json['userDefinedRecipeId'] as int,
     recipeDescription: json['recipeDescription'] as String,
     totalCalories: (json['totalCalories'] as num).toDouble(),
     foods: (json['foods'] as List<dynamic>)
@@ -19,7 +19,7 @@ RecipeEntity _$RecipeEntityFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$RecipeEntityToJson(RecipeEntity instance) =>
     <String, dynamic>{
-      'recipeId': instance.recipeId,
+      'userDefinedRecipeId': instance.userDefinedRecipeId,
       'recipeDescription': instance.recipeDescription,
       'totalCalories': instance.totalCalories,
       'foods': instance.foods,

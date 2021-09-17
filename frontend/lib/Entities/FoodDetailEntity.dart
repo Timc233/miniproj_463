@@ -9,7 +9,7 @@ class FoodDetailEntity {
   final double servingSize;
   final String foodName;
   final String servingSizeUnit;
-  final NutrientsEntity nutrients;
+  final List<NutrientsEntity> nutrients;
 
   FoodDetailEntity({
     required this.fdcId,
@@ -28,8 +28,8 @@ class NutrientsEntity {
   final double Value;
 
   NutrientsEntity({
-    required this.Attribute,
-    required this.Value,
+    this.Attribute = "",
+    this.Value = 0,
   });
   factory NutrientsEntity.fromJson(Map<String, dynamic> json) => _$NutrientsEntityFromJson(json);
   Map<String, dynamic> toJson() => _$NutrientsEntityToJson(this);

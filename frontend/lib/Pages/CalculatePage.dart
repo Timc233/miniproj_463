@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:http/http.dart' as http;
 import 'package:untitled/Api/Apis.dart';
+import 'package:untitled/Pages/RecipesPage.dart';
 
 import '../Entities/Entities.dart';
 import '../main.dart';
@@ -24,7 +25,7 @@ class CalculatePage extends StatefulWidget {
 
 class _CalculatePageState extends State<CalculatePage> {
 
-  int barcode = 894700010069;
+  int barcode = -1;
 
   void scanBarcodeAction() async{
     String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -32,13 +33,15 @@ class _CalculatePageState extends State<CalculatePage> {
 
     print("barcodeScanRes");
     print(barcodeScanRes);
-    uploadBarcodeAction(barcodeScanRes);
+    if(barcodeScanRes != "-1"){
+      uploadBarcodeAction(barcodeScanRes);
+    }
   }
 
   void uploadBarcodeAction(String barcode)async{
 
     print("uploadBarcodeAction");
-    String url = Apis.baseApi + Apis.searchBarcode; // Api here ignored
+    String url = Apis.baseApi + Apis.searchBarcode;
     url = url + barcode;
 
     try {
@@ -56,15 +59,101 @@ class _CalculatePageState extends State<CalculatePage> {
       print(result.message);
       print(result.data.foodName);
       print(result.data.caloriesPerServing);
+      
+      showDialog(context: context, builder: (context) {
+        return AlertDialog(
+          content: Container(
+            height: 80,
+            width: 200,
+            child: Center(
+              child: Text(result.data.foodName),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                getFoodDetail(barcode);
+              },
+              child: Text('Detail')
+            ),
+            // TextButton(
+            //   onPressed: () {
+            //     print('Add to Recipe!');
+            //
+            //     if(MyApp.isLogin){
+            //       getRecipes(barcode);
+            //     }
+            //     else{
+            //       Navigator.push(context, MaterialPageRoute(builder: (context) => LoginSigninPage()));
+            //     }
+            //   },
+            //   child: Text('Add to Recipe'),
+            // ),
+            TextButton(
+              onPressed: () {
+                print('Close!');
+                Navigator.pop(context);
+              },
+              child: Text('Close'),
+            )
+          ],
+        );
+      });
 
     } catch (e) {
       print(e);
     }
 
-    // var url = Uri.parse('http://ec2-18-212-8-137.compute-1.amazonaws.com:10086/food/search?barcode=894700010069');
-    // var response = await http.get(url);
-    // print("barcode response");
-    // print(response);
+  }
+
+  void getFoodDetail(String barcode)async{
+    String url = Apis.baseApi + Apis.searchFoodDetail;
+    url = url + barcode;
+
+    var dio = Dio();
+    var response = await dio.get(url);
+    print("food detail response");
+    print(url);
+    print(response);
+
+    final Map<String, dynamic> parsed = json.decode(response.toString());
+    FoodDetailSearchResponse result = FoodDetailSearchResponse.fromJson(parsed);
+
+    Navigator.pop(context);
+    Navigator.push(context, MaterialPageRoute(builder: (context) => FoodDetailPage(
+      foodDetail: result.data,
+      barcode: barcode,
+    )));
+
+  }
+
+  void getRecipes(String barcode)async{
+    String url = Apis.baseApi + Apis.recipeSearch;
+    var dio = Dio();
+    var response = await dio.post(
+      url,
+      data: FormData.fromMap({
+        'userId': MyApp.userId,
+      }),
+    );
+    print("RecipeEntity response");
+    print(response);
+
+    final Map<String, dynamic> parsed = json.decode(response.toString());
+    RecipeSearchResponse result = RecipeSearchResponse.fromJson(parsed);
+
+    Navigator.pop(context);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => RecipesPage(
+          barcode: barcode,
+          recipes: result.data,
+        )
+      )
+    );
+
 
   }
 
@@ -76,12 +165,7 @@ class _CalculatePageState extends State<CalculatePage> {
         child: Center(
           child: GestureDetector(
             onTap: (){
-              if(MyApp.isLogin){
-                scanBarcodeAction();
-              }
-              else{
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginSigninPage()));
-              }
+              scanBarcodeAction();
 
               // uploadBarcodeAction(barcode);
             },

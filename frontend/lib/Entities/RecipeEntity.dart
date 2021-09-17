@@ -4,13 +4,13 @@ part 'RecipeEntity.g.dart';
 
 @JsonSerializable()
 class RecipeEntity {
-  final int recipeId;
+  final int userDefinedRecipeId;
   final String recipeDescription;
   final double totalCalories;
   final List<RecipeFoodEntity> foods;
 
   RecipeEntity({
-    required this.recipeId,
+    required this.userDefinedRecipeId,
     required this.recipeDescription,
     required this.totalCalories,
     required this.foods,

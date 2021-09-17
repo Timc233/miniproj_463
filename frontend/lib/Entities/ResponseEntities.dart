@@ -35,6 +35,21 @@ class FoodDetailSearchResponse {
 }
 
 @JsonSerializable()
+class RecipeSearchResponse {
+  final int responseCode;
+  final String message;
+  final List<RecipeEntity> data;
+
+  RecipeSearchResponse({
+    required this.responseCode,
+    required this.message,
+    required this.data,
+  });
+  factory RecipeSearchResponse.fromJson(Map<String, dynamic> json) => _$RecipeSearchResponseFromJson(json);
+  Map<String, dynamic> toJson() => _$RecipeSearchResponseToJson(this);
+}
+
+@JsonSerializable()
 class StringDataResponse {
   final int responseCode;
   final String message;

@@ -38,6 +38,24 @@ Map<String, dynamic> _$FoodDetailSearchResponseToJson(
       'data': instance.data,
     };
 
+RecipeSearchResponse _$RecipeSearchResponseFromJson(Map<String, dynamic> json) {
+  return RecipeSearchResponse(
+    responseCode: json['responseCode'] as int,
+    message: json['message'] as String,
+    data: (json['data'] as List<dynamic>)
+        .map((e) => RecipeEntity.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
+}
+
+Map<String, dynamic> _$RecipeSearchResponseToJson(
+        RecipeSearchResponse instance) =>
+    <String, dynamic>{
+      'responseCode': instance.responseCode,
+      'message': instance.message,
+      'data': instance.data,
+    };
+
 StringDataResponse _$StringDataResponseFromJson(Map<String, dynamic> json) {
   return StringDataResponse(
     responseCode: json['responseCode'] as int,

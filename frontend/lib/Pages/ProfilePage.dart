@@ -1,10 +1,16 @@
 
 
+import 'dart:convert';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:untitled/main.dart';
 
+import '../Api/Apis.dart';
 import '../Entities/Entities.dart';
+import 'RecipesPage.dart';
 
 
 class ProfilePage extends StatefulWidget {
@@ -23,7 +29,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
 
   ScrollController _scrollController = ScrollController();
-  List<RecipeFoodEntity> recipes = [];
+  List<RecipeEntity> recipes = [];
   String settingText = "Setting";
 
   void initState() {
@@ -33,8 +39,23 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void getUserRecipes(context) async{
+
+    String url = Apis.baseApi + Apis.recipeSearch;
+    var dio = Dio();
+    var response = await dio.post(
+      url,
+      data: FormData.fromMap({
+        'userId': MyApp.userId,
+      }),
+    );
+    print("RecipeEntity response");
+    print(response);
+
+    final Map<String, dynamic> parsed = json.decode(response.toString());
+    RecipeSearchResponse result = RecipeSearchResponse.fromJson(parsed);
+
     setState(() {
-      settingText = "Guess what";
+      recipes = result.data;
     });
   }
 
@@ -102,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             child: Center(
               child: Text(
-                "Your Recipes",
+                "* Your Recipes *",
                 style: TextStyle(
                   fontSize: 20
                 ),
@@ -118,7 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 itemCount: recipes.length,
                 controller: _scrollController,
                 crossAxisCount: 2,
-                itemBuilder: (context, index) => recipeWidget(recipes[index].foodName),
+                itemBuilder: (context, index) => recipeWidget(index, recipes[index].recipeDescription),
                 staggeredTileBuilder: (index) => StaggeredTile.fit(1),
               ),
             )
@@ -128,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget recipeWidget(String title){
+  Widget recipeWidget(int index, String title){
     return Card(
       elevation: 0,
       color: Colors.white70,
@@ -137,17 +158,22 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       child: InkWell(
           onTap: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SingleRecipePage(
+              recipe: recipes[index],
+            )));
           },
           child: Column(
               children: [
-                Stack(
-                    children: <Widget>[
-                      //image
-                      Container(
-                        height: 160,
-                        color: Color.fromRGBO(244, 220, 130, 1),
-                      )
-                    ]
+                Padding(
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                  child: Container(
+                    height: 160,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black26),
+                      borderRadius: BorderRadius.circular(10.0),
+                      color: Color.fromRGBO(244, 220, 130, 1),
+                    ),
+                  ),
                 ),
 
                 //post title
