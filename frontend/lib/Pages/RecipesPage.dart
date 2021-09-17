@@ -34,6 +34,17 @@ class _RecipesPageState extends State<RecipesPage> {
 
   String newName = "";
 
+  final FocusNode focusNode = FocusNode();
+
+  TextEditingController _recipeInfoController = TextEditingController();
+
+  bool isLoading = false;
+
+  void initState() {
+    super.initState();
+    print("initState in Recipes page");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,67 +55,83 @@ class _RecipesPageState extends State<RecipesPage> {
           "Recipes List",
         ),
       ),
-      body: Container(
-        padding: EdgeInsets.all(4),
-        color: Colors.white,
-        child: Container(
-          color: Color.fromRGBO(256, 256, 256, 0.05),
-          child: StaggeredGridView.countBuilder(
-            itemCount: widget.recipes.length,
-            controller: _scrollController,
-            crossAxisCount: 2,
-            itemBuilder: (BuildContext context,int index){
-              if(index == 0){
-                return Card(
-                  elevation: 0,
-                  color: Colors.white70,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: InkWell(
-                      onTap: (){
+      body: Stack(
+        children: [
+          Container(
+            padding: EdgeInsets.all(4),
+            color: Colors.white,
+            child: Container(
+              color: Color.fromRGBO(256, 256, 256, 0.05),
+              child: StaggeredGridView.countBuilder(
+                itemCount: widget.recipes.length+1,
+                controller: _scrollController,
+                crossAxisCount: 2,
+                itemBuilder: (BuildContext context,int index){
+                  if(index == 0){
+                    return Card(
+                      elevation: 0,
+                      color: Colors.white70,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      child: InkWell(
+                          onTap: (){
+                            enterRecipeInfo(index);
 
-                        addToRecipe(index);
-
-                      },
-                      child: Column(
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-                              child: Container(
-                                height: 160,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Colors.black26),
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  color: Color.fromRGBO(244, 220, 130, 1),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "New"
+                          },
+                          child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+                                  child: Container(
+                                    height: 160,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(color: Colors.black26),
+                                      borderRadius: BorderRadius.circular(10.0),
+                                      color: Color.fromRGBO(244, 220, 130, 1),
+                                    ),
+                                    child: Center(
+                                      child: Text(
+                                          "New"
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
 
-                          ]
-                      )
-                  ),
-                );
-              }
-              else{
-                return recipeWidget(index, widget.recipes[index].recipeDescription);
-              }
-            },
-            staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+                              ]
+                          )
+                      ),
+                    );
+                  }
+                  else{
+                    return recipeWidget(index, widget.recipes[index-1].recipeDescription);
+                  }
+                },
+                staggeredTileBuilder: (index) => StaggeredTile.fit(1),
+              ),
+            ),
           ),
-        ),
-      ),
+          Visibility(
+            visible: isLoading,
+            child: Center(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        ],
+      )
     );
   }
 
   void addToRecipe(int index)async{
     print("addToRecipe");
+    print(MyApp.userId);
+    print(widget.barcode);
+    print(_recipeInfoController.text);
+    print(widget.amount);
     String url = Apis.baseApi + Apis.recipeAddFood;
+    setState(() {
+      isLoading = true;
+    });
 
     var dio = Dio();
     var response = await dio.post(
@@ -112,23 +139,107 @@ class _RecipesPageState extends State<RecipesPage> {
       data: (index == 0)?FormData.fromMap({
         'userId': MyApp.userId,
         'foodIndex': widget.barcode,
-        'recipeDescription': newName,
+        'recipeId': "",
+        'recipeDescription': _recipeInfoController.text,
         'amount': widget.amount,
       })
           :FormData.fromMap({
         'userId': MyApp.userId,
         'foodIndex': widget.barcode,
-        'recipeId': widget.recipes[index].userDefinedRecipeId,
-        'recipeDescription': newName,
+        'recipeId': widget.recipes[index-1].userDefinedRecipeId,
+        'recipeDescription': _recipeInfoController.text,
         'amount': widget.amount,
       }),
     );
     print("addToRecipe response");
     print(response);
 
+    setState(() {
+      isLoading = false;
+    });
 
-    Navigator.pop(context);
-    Navigator.pop(context);
+    if(response.statusCode == 200){
+
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }
+  }
+
+  void enterRecipeInfo(int index){
+    if(index != 0){
+      setState(() {
+        _recipeInfoController.text = widget.recipes[index-1].recipeDescription;
+      });
+    }
+    else{
+      setState(() {
+        _recipeInfoController.text = "new Recipe";
+      });
+    }
+    showDialog(context: context, builder: (context) {
+      return AlertDialog(
+        content: Stack(
+          children: [
+            Container(
+                width: MediaQuery.of(context).size.shortestSide * 0.7893,
+                child: Form(
+                    child: TextField(
+                      focusNode: focusNode,
+                      controller: _recipeInfoController,
+                      style: TextStyle(fontSize: 12, ),
+                      decoration:  InputDecoration(
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        ),
+                        helperText: ' ',
+                        filled: true,
+                        contentPadding: EdgeInsets.only(left: 15, top: 5),
+                        hintText: "Enter Your Recipe Description",
+                        suffixIcon: IconButton(
+                          onPressed: _recipeInfoController.clear,
+                          icon: Icon(Icons.clear, color: Colors.black),
+                        ),
+                      ),
+                      autofocus: false,
+                      onSubmitted: (value) {
+                        FocusScope.of(context).requestFocus(FocusNode());
+                      },
+                    )
+                )
+            ),
+          ],
+        ),
+        actions: <Widget>[
+          TextButton(
+              onPressed: () {
+                addToRecipe(index);
+                Navigator.pop(context);
+              },
+              child: Text('Confirm')
+          ),
+          // TextButton(
+          //   onPressed: () {
+          //     print('Add to Recipe!');
+          //
+          //     if(MyApp.isLogin){
+          //       getRecipes(barcode);
+          //     }
+          //     else{
+          //       Navigator.push(context, MaterialPageRoute(builder: (context) => LoginSigninPage()));
+          //     }
+          //   },
+          //   child: Text('Add to Recipe'),
+          // ),
+          TextButton(
+            onPressed: () {
+              print('Close!');
+              Navigator.pop(context);
+            },
+            child: Text('Close'),
+          )
+        ],
+      );
+    });
   }
 
   Widget recipeWidget(int index, String title){
@@ -140,8 +251,7 @@ class _RecipesPageState extends State<RecipesPage> {
       ),
       child: InkWell(
           onTap: (){
-
-            addToRecipe(index);
+            enterRecipeInfo(index);
 
           },
           child: Column(
@@ -215,6 +325,49 @@ class _SingleRecipesPageState extends State<SingleRecipePage> {
 
   }
 
+  void deleteRecipe()async{
+    print("deleteRecipe");
+    print(MyApp.userId);
+    print(widget.recipe.userDefinedRecipeId);
+    String url = Apis.baseApi + Apis.recipeDelete;
+    var dio = Dio();
+    var response = await dio.post(
+      url,
+      data: FormData.fromMap({
+        'userId': MyApp.userId,
+        'userDefinedRecipeId': widget.recipe.userDefinedRecipeId,
+      }),
+    );
+    print("deleteRecipe response");
+    print(response);
+
+    Navigator.pop(context, "delete");
+  }
+
+  void deleteFood(int index)async{
+    String url = Apis.baseApi + Apis.foodDelete;
+    var dio = Dio();
+    var response = await dio.post(
+      url,
+      data: FormData.fromMap({
+        'userId': MyApp.userId,
+        'recipeId': widget.recipe.foods[index].recipeId,
+      }),
+    );
+    print("deleteRecipe response");
+    print(response);
+
+    setState(() {
+
+      widget.recipe.foods.removeAt(index);
+    });
+    if(widget.recipe.foods.isEmpty){
+      Navigator.pop(context, "delete");
+    }
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -224,6 +377,20 @@ class _SingleRecipesPageState extends State<SingleRecipePage> {
         title: Text(
           widget.recipe.recipeDescription,
         ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 8),
+            child: GestureDetector(
+              onTap: (){
+                deleteRecipe();
+              },
+              child: Icon(
+                Icons.delete,
+                color: Colors.white,
+              ),
+            ),
+          )
+        ],
       ),
       body: Container(
         color: Colors.white,
@@ -256,7 +423,12 @@ class _SingleRecipesPageState extends State<SingleRecipePage> {
                       itemCount: widget.recipe.foods.length,
                       itemBuilder: (BuildContext context,int index){
                         return ListTile(
-                            leading: Icon(Icons.food_bank_rounded),
+                            leading: GestureDetector(
+                              onTap: (){
+                                deleteFood(index);
+                              },
+                              child: Icon(Icons.delete_outline),
+                            ),
                             trailing: Text(
                               widget.recipe.foods[index].caloriePerServing.roundToDouble().toString() + "\ncalorie/serving",
                               style: TextStyle(

@@ -261,18 +261,34 @@ class _FoodDetailPageState extends State<FoodDetailPage> {
     print(response);
 
     final Map<String, dynamic> parsed = json.decode(response.toString());
-    RecipeSearchResponse result = RecipeSearchResponse.fromJson(parsed);
+    print(parsed['data'][0]['userDefinedRecipeId']);
+    if(parsed['data'][0]['userDefinedRecipeId'] != null){
 
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => RecipesPage(
-              amount: amountNum,
-              barcode: barcode,
-              recipes: result.data,
-            )
-        )
-    );
+      RecipeSearchResponse result = RecipeSearchResponse.fromJson(parsed);
+
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecipesPage(
+                amount: amountNum,
+                barcode: barcode,
+                recipes: result.data,
+              )
+          )
+      );
+    }
+    else{
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => RecipesPage(
+                amount: amountNum,
+                barcode: barcode,
+                recipes: [],
+              )
+          )
+      );
+    }
 
 
   }

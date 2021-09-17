@@ -157,10 +157,13 @@ class _ProfilePageState extends State<ProfilePage> {
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: InkWell(
-          onTap: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SingleRecipePage(
+          onTap: ()async{
+            var result = await Navigator.push(context, MaterialPageRoute(builder: (context) => SingleRecipePage(
               recipe: recipes[index],
             )));
+            if(result != null){
+              getUserRecipes(context);
+            }
           },
           child: Column(
               children: [

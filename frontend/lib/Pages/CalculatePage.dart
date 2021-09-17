@@ -26,6 +26,7 @@ class CalculatePage extends StatefulWidget {
 class _CalculatePageState extends State<CalculatePage> {
 
   int barcode = -1;
+  bool isLoading = false;
 
   void scanBarcodeAction() async{
     String barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
@@ -62,12 +63,20 @@ class _CalculatePageState extends State<CalculatePage> {
       
       showDialog(context: context, builder: (context) {
         return AlertDialog(
-          content: Container(
-            height: 80,
-            width: 200,
-            child: Center(
-              child: Text(result.data.foodName),
-            ),
+          content: Stack(
+            children: [
+              Container(
+                height: 80,
+                width: 200,
+                child: Center(
+                  child: Text(result.data.foodName),
+                ),
+              ),
+              Visibility(
+                visible: isLoading,
+                child: CircularProgressIndicator(),
+              )
+            ],
           ),
           actions: <Widget>[
             TextButton(
@@ -107,6 +116,9 @@ class _CalculatePageState extends State<CalculatePage> {
   }
 
   void getFoodDetail(String barcode)async{
+    setState(() {
+      isLoading = true;
+    });
     String url = Apis.baseApi + Apis.searchFoodDetail;
     url = url + barcode;
 
@@ -124,6 +136,9 @@ class _CalculatePageState extends State<CalculatePage> {
       foodDetail: result.data,
       barcode: barcode,
     )));
+    setState(() {
+      isLoading = false;
+    });
 
   }
 

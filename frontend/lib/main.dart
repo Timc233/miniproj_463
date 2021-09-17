@@ -9,8 +9,8 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static bool isLogin = true; // default false
-  static int userId = 1; // default -1
+  static bool isLogin = false; // default false
+  static int userId = -1; // default -1
   
   // This widget is the root of your application.
   @override
