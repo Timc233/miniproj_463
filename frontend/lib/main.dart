@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled/Pages/CalculatePage.dart';
 import 'package:untitled/Pages/HomePage.dart';
+import 'package:untitled/Pages/LoginSigninPage.dart';
 import 'package:untitled/Pages/Pages.dart';
 
 void main() {
@@ -8,6 +9,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  static bool isLogin = false; // default false
+  static int userId = -1; // default -1
+  
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -36,6 +40,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  
+  
   int tabIndex = 1;
 
   @override
@@ -62,10 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
           )
         ],
         onTap: (i){
-          print("tap on index: " + i.toString());
-          setState(() {
-            tabIndex = i;
-          });
+          if(MyApp.isLogin){
+            print("tap on index: " + i.toString());
+            setState(() {
+              tabIndex = i;
+            });
+          }
+          else{
+            Navigator.push(context, MaterialPageRoute(builder: (context) => LoginSigninPage()));
+          }
         },
       ),
     );
