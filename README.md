@@ -1,2 +1,2 @@
 # miniproj_463
-A miniproject exploring REST API.
+An app provides barcode scan, personal recipes and more.
